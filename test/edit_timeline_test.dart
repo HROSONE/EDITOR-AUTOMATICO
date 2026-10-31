@@ -26,7 +26,7 @@ void main() {
         sourceDuration: const Duration(seconds: 12),
         speechRanges: const [],
       );
-      expect(timeline.keepRanges, [TimeRange(Duration.zero, const Duration(seconds: 12))]);
+      expect(timeline.keepRanges, const [TimeRange(Duration.zero, Duration(seconds: 12))]);
       expect(timeline.removedRanges, isEmpty);
     });
 
