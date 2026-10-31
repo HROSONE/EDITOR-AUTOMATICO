@@ -247,9 +247,19 @@ class AutomaticEditorService {
     onStage('Validando arquivo MP4 final…');
     final validation = await FFprobeKit.getMediaInformation(output.path);
     final validatedMedia = await validation.getMediaInformation();
-    if (validatedMedia == null || (validatedMedia.getDuration() ?? '').isEmpty) {
+    final outputStreams = validatedMedia?.getStreams() ?? [];
+    final outputDurationSeconds = double.tryParse(validatedMedia?.getDuration() ?? '');
+    final expectedDurationSeconds = timeline.outputDuration.inMilliseconds / 1000;
+    final toleranceSeconds = expectedDurationSeconds < 10 ? 2.0 : expectedDurationSeconds * 0.05;
+    final hasVideoOutput = outputStreams.any((stream) => stream.getType() == 'video');
+    final hasAudioOutput = outputStreams.any((stream) => stream.getType() == 'audio');
+    if (validatedMedia == null ||
+        outputDurationSeconds == null ||
+        !hasVideoOutput ||
+        (hasAudio && !hasAudioOutput) ||
+        (outputDurationSeconds - expectedDurationSeconds).abs() > toleranceSeconds) {
       await output.delete();
-      throw StateError('O MP4 foi criado, mas não passou na validação de mídia.');
+      throw StateError('O MP4 foi criado, mas falhou na validação de faixas ou duração.');
     }
     onStage('Vídeo editado e validado.');
     return output;
