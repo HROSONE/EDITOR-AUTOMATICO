@@ -5,6 +5,12 @@ class TimeRange {
   final Duration start;
   final Duration end;
   Duration get duration => end - start;
+
+  @override
+  bool operator ==(Object other) => other is TimeRange && other.start == start && other.end == end;
+
+  @override
+  int get hashCode => Object.hash(start, end);
   Map<String, int> toJson() => {'startMs': start.inMilliseconds, 'endMs': end.inMilliseconds};
   factory TimeRange.fromJson(Map<String, dynamic> json) => TimeRange(
     Duration(milliseconds: json['startMs'] as int),
