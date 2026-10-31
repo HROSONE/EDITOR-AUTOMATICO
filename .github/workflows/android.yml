@@ -86,7 +86,7 @@ jobs:
 
           content = path.read_text()
           if "Keep Android library plugins aligned with the app compile SDK." not in content:
-              path.write_text(content.rstrip() + "\\n\\n" + block + "\\n")
+              path.write_text(content.rstrip() + "\n\n" + block + "\n")
           PY
       - name: Configure network permission for first model download
         run: |
