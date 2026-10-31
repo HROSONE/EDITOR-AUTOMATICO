@@ -91,7 +91,14 @@ class _EditorHomePageState extends State<EditorHomePage> {
   }
 
   Future<void> _loadProjects() async {
-    final projects = await _store.load();
+    List<VideoProject> projects;
+    try {
+      projects = await _store.load();
+    } on Object catch (error) {
+      if (!mounted) return;
+      setState(() { _loading = false; _error = 'Não foi possível carregar os projetos: $error'; });
+      return;
+    }
     if (!mounted) return;
     setState(() { _projects = projects; _loading = false; });
   }
@@ -390,7 +397,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
         if (controller != null && controller.value.isInitialized) ...[
           const SizedBox(height: 12),
           ValueListenableBuilder<VideoPlayerValue>(valueListenable: controller, builder: (context, value, _) {
-            final max = value.duration.inMilliseconds.toDouble().clamp(1, double.infinity);
+            final max = value.duration.inMilliseconds.toDouble().clamp(1, double.infinity).toDouble();
             return Column(children: [
               Slider(value: value.position.inMilliseconds.toDouble().clamp(0, max).toDouble(), max: max,
                 onChanged: (v) => controller.seekTo(Duration(milliseconds: v.round()))),
