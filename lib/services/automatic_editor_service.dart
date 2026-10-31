@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ffmpeg_kit_flutter_new_video/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new_video/ffprobe_kit.dart';
+import 'package:ffmpeg_kit_flutter_new_video/return_code.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:whisper_cpp_flutter_plus/whisper_cpp_flutter_plus.dart';
 
@@ -75,7 +77,7 @@ class AutomaticEditorService {
         onStage('Baixando modelo Whisper Tiny verificado…');
         await for (final item in manager.downloadCatalogModel(WhisperModelCatalog.tiny)) {
           if (_cancelRequested) throw StateError('Download cancelado.');
-          onProgress(item.fraction.clamp(0.0, 1.0).toDouble());
+          onProgress((item.fraction ?? 0.0).clamp(0.0, 1.0).toDouble());
         }
         model = await manager.findCatalogModel(WhisperModelCatalog.tiny);
       }
@@ -138,7 +140,7 @@ class AutomaticEditorService {
     } finally {
       _activeWhisperTask = null;
       vad?.dispose();
-      await engine?.dispose();
+      engine?.dispose();
       manager.close();
     }
   }
