@@ -436,7 +436,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
         ]),
         if (_cues.isEmpty)
           const Padding(padding: EdgeInsets.symmetric(vertical: 22),
-            child: Text('Nenhuma legenda. Posicione o vídeo e adicione uma legenda manualmente. A transcrição automática ainda não está integrada.', textAlign: TextAlign.center))
+            child: Text('Nenhuma legenda adicionada a esta revisão. Use “Gerar legendas automaticamente” para transcrever o vídeo; a edição manual é opcional.', textAlign: TextAlign.center))
         else
           ..._cues.asMap().entries.map((entry) {
             final index = entry.key;
