@@ -158,6 +158,9 @@ class _EditorHomePageState extends State<EditorHomePage> {
     try {
       final file = File(project.path);
       if (await file.exists()) await file.delete();
+      final support = await getApplicationSupportDirectory();
+      final projectWork = Directory('${support.path}/automatic_editor/${project.id}');
+      if (await projectWork.exists()) await projectWork.delete(recursive: true);
       final updated = _projects.where((p) => p.id != project.id).toList();
       await _store.save(updated);
       if (mounted) setState(() => _projects = updated);
