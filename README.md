@@ -25,7 +25,6 @@ Os arquivos de vídeo e áudio são processados localmente. O aplicativo não en
 ## Ainda precisa ser validado / evoluído
 
 - Compilação Android e execução em aparelho físico; o CI deve validar dependências, análise estática, testes e APK.
-- Pré-visualização dentro do app do MP4 já renderizado.
 - Retomada de uma inferência interrompida no meio; o app recupera o último estado completo salvo, não o estado interno de uma inferência nativa interrompida.
 - Ajustes finos de VAD e margens com base em vídeos reais em português.
 
@@ -40,7 +39,7 @@ O plugin Whisper exige Android API 24 ou superior. O workflow configura esse mí
 
 ## Testes automatizados
 
-A suíte `test/edit_timeline_test.dart` valida margens de fala, plano de cortes, mapeamento temporal, serialização da timeline e retimização de legendas SRT. O workflow também executa `flutter analyze`, `flutter test` e `flutter build apk --debug`. Os testes são independentes dos plugins nativos para permitir validação rápida da lógica de timeline.
+A suíte `test/edit_timeline_test.dart` valida margens de fala, plano de cortes, mapeamento temporal, serialização da timeline e retimização de legendas SRT. O workflow executa `flutter analyze`, `flutter test` e `flutter build apk --debug`.
 
 ## Desenvolvimento
 
