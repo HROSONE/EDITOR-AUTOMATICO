@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:video_player/video_player.dart';
 
 import '../services/automatic_editor_service.dart';
 import '../services/edit_timeline.dart';
@@ -39,12 +40,34 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
   String? _modelPath;
   EditTimeline? _timeline;
   File? _renderedMp4;
+  VideoPlayerController? _previewController;
   double _progress = 0;
 
   @override
   void initState() {
     super.initState();
     _restoreState();
+  }
+
+  @override
+  void dispose() {
+    if (_busy || _rendering) _service.cancel();
+    _previewController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadPreview(File file) async {
+    final previous = _previewController;
+    final controller = VideoPlayerController.file(file);
+    _previewController = controller;
+    await previous?.dispose();
+    try {
+      await controller.initialize();
+      await controller.setLooping(false);
+      if (mounted) setState(() {});
+    } on Object catch (error) {
+      if (mounted) setState(() => _error = 'O MP4 foi criado, mas a prévia não abriu: $error');
+    }
   }
 
   Future<void> _restoreState() async {
@@ -194,6 +217,7 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
       );
       if (mounted) {
         setState(() => _renderedMp4 = file);
+        await _loadPreview(file);
         await _persistCurrentState(renderedPath: file.path);
       }
     } on Object catch (error) {
@@ -330,7 +354,39 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
                       label: Text(_rendering ? 'Renderizando vídeo…' : 'Aplicar cortes e gerar MP4 final'),
                     ),
                     if (_renderedMp4 != null) ...[
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 14),
+                      if (_previewController != null && _previewController!.value.isInitialized) ...[
+                        AspectRatio(
+                          aspectRatio: _previewController!.value.aspectRatio,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: VideoPlayer(_previewController!),
+                          ),
+                        ),
+                        ValueListenableBuilder<VideoPlayerValue>(
+                          valueListenable: _previewController!,
+                          builder: (context, value, _) => Row(
+                            children: [
+                              IconButton.filled(
+                                onPressed: () => value.isPlaying
+                                    ? _previewController!.pause()
+                                    : _previewController!.play(),
+                                icon: Icon(value.isPlaying ? Icons.pause : Icons.play_arrow),
+                              ),
+                              Expanded(
+                                child: Slider(
+                                  value: value.position.inMilliseconds.toDouble()
+                                      .clamp(0, value.duration.inMilliseconds.toDouble().clamp(1, double.infinity)),
+                                  max: value.duration.inMilliseconds.toDouble().clamp(1, double.infinity),
+                                  onChanged: (position) => _previewController!.seekTo(
+                                    Duration(milliseconds: position.round()),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       Card(
                         child: ListTile(
                           leading: const Icon(Icons.verified_outlined),
