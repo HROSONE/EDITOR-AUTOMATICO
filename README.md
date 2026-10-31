@@ -25,7 +25,6 @@ Os arquivos de vídeo e áudio são processados localmente. O aplicativo não en
 ## Ainda precisa ser validado / evoluído
 
 - Compilação Android e execução em aparelho físico; o CI deve validar dependências, análise estática, testes e APK.
-- Pré-visualização dentro do app do MP4 já renderizado.
 - Retomada de uma inferência interrompida no meio; o app recupera o último estado completo salvo, não o estado interno de uma inferência nativa interrompida.
 - Ajustes finos de VAD e margens com base em vídeos reais em português.
 
