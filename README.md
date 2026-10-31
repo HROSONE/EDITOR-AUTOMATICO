@@ -13,6 +13,7 @@ Aplicativo Flutter Android-first para editar vídeos com processamento local.
 - Geração de legendas SRT sincronizadas pelos timestamps do Whisper.
 - Download sob demanda do modelo multilíngue Whisper Tiny (aproximadamente 75 MB); depois do download, a inferência funciona offline.
 - Exportação e compartilhamento do SRT.
+- Renderização de um MP4 com legendas queimadas (sem cortes automáticos ainda).
 - Revisão/adição manual de legendas como recurso opcional.
 
 Os arquivos de vídeo e áudio são processados localmente. O aplicativo não envia mídia para servidores. A primeira execução da transcrição precisa de internet apenas para baixar o modelo.
@@ -22,7 +23,7 @@ Os arquivos de vídeo e áudio são processados localmente. O aplicativo não en
 - Refinamento do VAD e configuração de sensibilidade/margens por projeto.
 - Timeline não destrutiva e plano de cortes seguros.
 - Remoção automática das pausas candidatas, com margens de segurança para não cortar sílabas ou palavras.
-- Renderização/exportação MP4 com cortes e legendas queimadas.
+- Aplicação dos cortes ao MP4 e ajuste dos timestamps das legendas após os cortes.
 - Retomada de tarefas interrompidas e cancelamento completo do processamento.
 
 **Importante:** a integração do Whisper e do FFmpeg foi adicionada ao código, mas ainda precisa passar pelo build Android e por testes em aparelho físico. Não considere a versão pronta até o GitHub Actions concluir análise, testes e APK com sucesso.
