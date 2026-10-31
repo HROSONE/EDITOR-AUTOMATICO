@@ -170,7 +170,7 @@ class _EditorHomePageState extends State<EditorHomePage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Editor Automático'), actions: [
       IconButton(tooltip: 'Sobre', onPressed: () => showAboutDialog(
-        context: context, applicationName: 'Editor Automático', applicationVersion: '0.2.0',
+        context: context, applicationName: 'Editor Automático', applicationVersion: '0.3.0',
         applicationLegalese: 'Processamento local. Seus vídeos não são enviados automaticamente.',
       ), icon: const Icon(Icons.info_outline)),
     ]),
@@ -242,9 +242,9 @@ class _EditorHomePageState extends State<EditorHomePage> {
               Text('Etapas do editor', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 12),
               const _Stage(title: 'Importação e reprodução local', status: 'Disponível', done: true, icon: Icons.check_circle),
-              const _Stage(title: 'Legendas manuais e exportação SRT', status: 'Disponível', done: true, icon: Icons.subtitles),
+              const _Stage(title: 'Revisão manual e exportação SRT', status: 'Disponível', done: true, icon: Icons.subtitles),
               const _Stage(title: 'Detecção automática de silêncio (VAD)', status: 'Motor pendente', icon: Icons.graphic_eq),
-              const _Stage(title: 'Transcrição automática (Whisper)', status: 'Motor pendente', icon: Icons.record_voice_over),
+              const _Stage(title: 'Transcrição automática (Whisper)', status: 'Integração adicionada', icon: Icons.record_voice_over),
               const _Stage(title: 'Cortes e renderização MP4', status: 'Motor pendente', icon: Icons.content_cut),
             ]),
           )),
