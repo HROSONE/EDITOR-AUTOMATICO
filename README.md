@@ -41,6 +41,10 @@ O plugin Whisper exige Android API 24 ou superior. O workflow configura esse mí
 
 A suíte `test/edit_timeline_test.dart` valida margens de fala, plano de cortes, mapeamento temporal, serialização da timeline e retimização de legendas SRT. O workflow executa `flutter analyze`, `flutter test` e `flutter build apk --debug`.
 
+## Validação automatizada
+
+Este commit de validação executa análise estática, testes da timeline e build Android de depuração para o estado atual da branch principal.
+
 ## Desenvolvimento
 
 Requer Flutter stable e Android SDK:
