@@ -453,7 +453,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
           }),
         const SizedBox(height: 16),
         const Card(child: Padding(padding: EdgeInsets.all(14),
-          child: Text('O SRT é exportado separadamente. Este MVP ainda não corta o vídeo nem grava legendas dentro do MP4.'))),
+          child: Text('A análise automática cria um plano de cortes e sincroniza as legendas com o vídeo final. A revisão manual é opcional.'))),
       ])),
     );
   }
