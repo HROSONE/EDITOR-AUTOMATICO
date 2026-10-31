@@ -1,7 +1,7 @@
 name: editor_automatico
 description: Editor automático de vídeos com processamento local.
 publish_to: "none"
-version: 0.1.0+1
+version: 0.2.0+2
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -9,6 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  file_picker: ^8.1.7
+  path_provider: ^2.1.5
+  share_plus: ^10.1.4
+  shared_preferences: ^2.3.5
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:
