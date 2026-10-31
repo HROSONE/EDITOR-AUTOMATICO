@@ -39,6 +39,55 @@ jobs:
             sed -i 's/compileSdkVersion flutter.compileSdkVersion/compileSdkVersion 36/' android/app/build.gradle
             sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 24/' android/app/build.gradle
           fi
+      - name: Force compile SDK 36 for every Android module
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          kotlin = Path('android/build.gradle.kts')
+          groovy = Path('android/build.gradle')
+
+          if kotlin.exists():
+              path = kotlin
+              block = """
+          // Keep Android library plugins aligned with the app compile SDK.
+          subprojects {
+              afterEvaluate {
+                  val androidExtension = extensions.findByName("android")
+                  if (androidExtension != null) {
+                      val compileSdkMethod = androidExtension.javaClass.methods.firstOrNull {
+                          (it.name == "compileSdkVersion" || it.name == "setCompileSdkVersion") &&
+                          it.parameterCount == 1
+                      }
+                      compileSdkMethod?.invoke(androidExtension, 36)
+                  }
+              }
+          }
+          """
+          elif groovy.exists():
+              path = groovy
+              block = """
+          // Keep Android library plugins aligned with the app compile SDK.
+          subprojects {
+              afterEvaluate {
+                  def androidExtension = extensions.findByName("android")
+                  if (androidExtension != null) {
+                      def compileSdkMethod = androidExtension.class.methods.find {
+                          (it.name == "compileSdkVersion" || it.name == "setCompileSdkVersion") &&
+                          it.parameterCount == 1
+                      }
+                      compileSdkMethod?.invoke(androidExtension, 36)
+                  }
+              }
+          }
+          """
+          else:
+              raise SystemExit("Generated Android root Gradle file not found")
+
+          content = path.read_text()
+          if "Keep Android library plugins aligned with the app compile SDK." not in content:
+              path.write_text(content.rstrip() + "\\n\\n" + block + "\\n")
+          PY
       - name: Configure network permission for first model download
         run: |
           python3 - <<'PY'
