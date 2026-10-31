@@ -29,6 +29,7 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
   String? _error;
   String? _srt;
   String? _transcript;
+  List<DetectedPause> _pauses = [];
   double _progress = 0;
 
   Future<void> _run() async {
@@ -38,6 +39,7 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
       _error = null;
       _srt = null;
       _transcript = null;
+      _pauses = [];
       _progress = 0;
       _stage = 'Iniciando…';
     });
@@ -56,7 +58,8 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
       setState(() {
         _srt = result.srt;
         _transcript = result.text;
-        _stage = 'Transcrição concluída.';
+        _pauses = result.longPauses;
+        _stage = 'Transcrição e análise de pausas concluídas.';
       });
     } on Object catch (error) {
       if (mounted) setState(() {
@@ -66,6 +69,13 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  String _formatTime(Duration value) {
+    final minutes = value.inMinutes.toString().padLeft(2, '0');
+    final seconds = (value.inSeconds % 60).toString().padLeft(2, '0');
+    final millis = (value.inMilliseconds % 1000).toString().padLeft(3, '0');
+    return '$minutes:$seconds.$millis';
   }
 
   Future<void> _shareSrt() async {
@@ -118,6 +128,25 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
             Text('Transcrição', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
             SelectableText(_transcript!),
+            const SizedBox(height: 18),
+            Text('Pausas longas detectadas', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 6),
+            Text(
+              _pauses.isEmpty
+                  ? 'Nenhuma pausa acima de 1,2 segundo foi identificada.'
+                  : '${_pauses.length} pausa(s) candidata(s). Elas ainda não foram removidas do vídeo.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            if (_pauses.isNotEmpty) ..._pauses.asMap().entries.map((entry) {
+              final pause = entry.value;
+              return ListTile(
+                dense: true,
+                leading: const Icon(Icons.pause_circle_outline),
+                title: Text('Pausa ${entry.key + 1}'),
+                subtitle: Text('${_formatTime(pause.start)} – ${_formatTime(pause.end)}'),
+                trailing: Text('${pause.duration.inMilliseconds / 1000}s'),
+              );
+            }),
             const SizedBox(height: 18),
             FilledButton.tonalIcon(
               onPressed: _shareSrt,
