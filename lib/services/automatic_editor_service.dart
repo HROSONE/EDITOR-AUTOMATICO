@@ -83,7 +83,7 @@ class AutomaticEditorService {
           Uri.parse(modelUrl),
           modelFileName,
         )) {
-          onProgress(item.fraction.clamp(0.0, 1.0));
+          onProgress(item.fraction.clamp(0.0, 1.0).toDouble());
         }
         model = await manager.find(modelFileName);
       }
@@ -136,7 +136,7 @@ class AutomaticEditorService {
         ),
       );
       task.progress.listen((value) {
-        onProgress((value / 100).clamp(0.0, 1.0));
+        onProgress((value / 100).clamp(0.0, 1.0).toDouble());
       });
       final result = await task.result;
       final srt = result.toSrt();
