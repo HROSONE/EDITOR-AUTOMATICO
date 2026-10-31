@@ -103,10 +103,7 @@ class AutomaticEditorService {
       vad = WhisperVad.load(vadModel.path, useGpu: false, threads: 2);
       final speech = vad.segments(samples, threshold: 0.5, minSpeechMs: 250,
         minSilenceMs: 500, speechPadMs: 120);
-      final timeline = EditTimeline.fromSpeech(
-        sourceDuration: sourceDuration,
-        speechRanges: speech.map((s) => TimeRange(s.start, s.end)).toList(),
-      );
+      final vadSpeechRanges = speech.map((s) => TimeRange(s.start, s.end)).toList();
 
       if (_cancelRequested) throw StateError('Processamento cancelado.');
       onStage('Transcrevendo em português…');
@@ -128,6 +125,15 @@ class AutomaticEditorService {
 
       final srt = result.toSrt();
       if (srt.trim().isEmpty) throw StateError('O Whisper não encontrou fala para legendar neste vídeo.');
+      // Union VAD speech ranges with Whisper subtitle ranges so the cut planner
+      // never removes a region that Whisper itself recognized as spoken text.
+      final whisperRanges = SrtCodec.parse(srt)
+          .map((cue) => TimeRange(cue.start, cue.end))
+          .toList();
+      final timeline = EditTimeline.fromSpeech(
+        sourceDuration: sourceDuration,
+        speechRanges: [...vadSpeechRanges, ...whisperRanges],
+      );
       final srtFile = File('${workDir.path}/legendas_originais.srt');
       await srtFile.writeAsString(srt, flush: true);
       final transcription = AutomaticTranscription(
