@@ -43,7 +43,7 @@ A suíte `test/edit_timeline_test.dart` valida margens de fala, plano de cortes,
 
 ## Validação automatizada
 
-Este commit de validação executa análise estática, testes da timeline e build Android de depuração para o estado atual da branch principal.
+Este pull request valida a branch principal com análise estática, testes da timeline e build Android de depuração.
 
 ## Desenvolvimento
 
