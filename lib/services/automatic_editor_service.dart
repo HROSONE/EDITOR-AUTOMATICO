@@ -205,13 +205,13 @@ class AutomaticEditorService {
       graph.write('[0:v:0]trim=start=$start:end=$end,setpts=PTS-STARTPTS[v$i];');
       if (hasAudio) graph.write('[0:a:0]atrim=start=$start:end=$end,asetpts=PTS-STARTPTS[a$i];');
     }
-    final videoInputs = List.generate(timeline.keepRanges.length, (i) => '[v$i]').join();
     if (hasAudio) {
-      final audioInputs = List.generate(timeline.keepRanges.length, (i) => '[a$i]').join();
-      graph.write('$videoInputs$audioInputs'
+      final inputs = List.generate(timeline.keepRanges.length, (i) => '[v$i][a$i]').join();
+      graph.write('$inputs'
           'concat=n=${timeline.keepRanges.length}:v=1:a=1[vcat][acat];');
     } else {
-      graph.write('$videoInputs'
+      final inputs = List.generate(timeline.keepRanges.length, (i) => '[v$i]').join();
+      graph.write('$inputs'
           'concat=n=${timeline.keepRanges.length}:v=1:a=0[vcat];');
     }
     graph.write('[vcat]subtitles=filename=\'${_escapeFilterPath(retimedSrt.path)}\':charenc=UTF-8[vout]');
