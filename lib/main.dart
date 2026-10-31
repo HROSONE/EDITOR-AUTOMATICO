@@ -243,7 +243,7 @@ class _EditorHomePageState extends State<EditorHomePage> {
               const SizedBox(height: 12),
               const _Stage(title: 'Importação e reprodução local', status: 'Disponível', done: true, icon: Icons.check_circle),
               const _Stage(title: 'Revisão manual e exportação SRT', status: 'Disponível', done: true, icon: Icons.subtitles),
-              const _Stage(title: 'Detecção automática de silêncio (VAD)', status: 'Motor pendente', icon: Icons.graphic_eq),
+              const _Stage(title: 'Detecção de fala e pausas (Silero VAD)', status: 'Integração adicionada', icon: Icons.graphic_eq),
               const _Stage(title: 'Transcrição automática (Whisper)', status: 'Integração adicionada', icon: Icons.record_voice_over),
               const _Stage(title: 'Cortes e renderização MP4', status: 'Motor pendente', icon: Icons.content_cut),
             ]),
