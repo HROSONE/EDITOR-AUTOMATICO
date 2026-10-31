@@ -33,7 +33,7 @@ void main() {
     test('maps timestamps across removed sections', () {
       final timeline = const EditTimeline(
         sourceDuration: Duration(seconds: 10),
-        keepRanges: const [
+        keepRanges: [
           TimeRange(Duration(seconds: 1), Duration(seconds: 3)),
           TimeRange(Duration(seconds: 6), Duration(seconds: 9)),
         ],
