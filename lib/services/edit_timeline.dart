@@ -162,7 +162,7 @@ class SrtCodec {
     for (var i = 0; i < cues.length; i++) {
       final cue = cues[i];
       out.writeln(i + 1);
-      out.writeln('\${formatTimestamp(cue.start)} --> \${formatTimestamp(cue.end)}');
+      out.writeln('${formatTimestamp(cue.start)} --> ${formatTimestamp(cue.end)}');
       out.writeln(cue.text);
       out.writeln();
     }
