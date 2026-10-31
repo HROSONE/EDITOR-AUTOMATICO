@@ -117,11 +117,11 @@ class _EditorHomePageState extends State<EditorHomePage> {
       final source = File(sourcePath);
       if (!await source.exists()) throw const FileSystemException('O arquivo selecionado não existe.');
       final appDir = await getApplicationDocumentsDirectory();
-      final mediaDir = Directory('\${appDir.path}/videos');
+      final mediaDir = Directory('${appDir.path}/videos');
       await mediaDir.create(recursive: true);
       final ext = (picked.extension ?? 'mp4').toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
       final id = DateTime.now().microsecondsSinceEpoch.toString();
-      final destination = File('\${mediaDir.path}/$id.\${ext.isEmpty ? 'mp4' : ext}');
+      final destination = File('${mediaDir.path}/$id.${ext.isEmpty ? 'mp4' : ext}');
       await source.copy(destination.path);
       final project = VideoProject(id: id, title: picked.name, path: destination.path, addedAt: DateTime.now());
       final updated = [project, ..._projects];
@@ -146,7 +146,7 @@ class _EditorHomePageState extends State<EditorHomePage> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Excluir projeto?'),
-        content: Text('O vídeo “\${project.title}” será removido do aplicativo.'),
+        content: Text('O vídeo “${project.title}” será removido do aplicativo.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
           FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Excluir')),
@@ -207,7 +207,7 @@ class _EditorHomePageState extends State<EditorHomePage> {
           Row(children: [
             Text('Seus projetos', style: Theme.of(context).textTheme.titleLarge),
             const Spacer(),
-            Text('\${_projects.length}'),
+            Text('${_projects.length}'),
           ]),
           const SizedBox(height: 12),
           if (_projects.isEmpty)
@@ -226,7 +226,7 @@ class _EditorHomePageState extends State<EditorHomePage> {
               child: ListTile(
                 leading: const CircleAvatar(child: Icon(Icons.play_arrow)),
                 title: Text(project.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                subtitle: Text('Adicionado em \${project.addedAt.day.toString().padLeft(2, '0')}/\${project.addedAt.month.toString().padLeft(2, '0')}/\${project.addedAt.year}'),
+                subtitle: Text('Adicionado em ${project.addedAt.day.toString().padLeft(2, '0')}/${project.addedAt.month.toString().padLeft(2, '0')}/${project.addedAt.year}'),
                 onTap: () => _openProject(project),
                 trailing: PopupMenuButton<String>(
                   onSelected: (value) { if (value == 'delete') _deleteProject(project); },
@@ -351,7 +351,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
     return '$h:$m:$s,$ms';
   }
 
-  String _clock(Duration value) => '\${value.inMinutes.toString().padLeft(2, '0')}:\${(value.inSeconds % 60).toString().padLeft(2, '0')}';
+  String _clock(Duration value) => '${value.inMinutes.toString().padLeft(2, '0')}:${(value.inSeconds % 60).toString().padLeft(2, '0')}';
 
   Future<void> _exportSrt() async {
     if (_cues.isEmpty) {
@@ -361,17 +361,17 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
     try {
       final dir = await getApplicationDocumentsDirectory();
       final base = widget.project.title.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
-      final file = File('\${dir.path}/\${base}_legendas.srt');
+      final file = File('${dir.path}/${base}_legendas.srt');
       final out = StringBuffer();
       for (var i = 0; i < _cues.length; i++) {
         final cue = _cues[i];
         out.writeln(i + 1);
-        out.writeln('\${_srtTime(cue.start)} --> \${_srtTime(cue.end)}');
+        out.writeln('${_srtTime(cue.start)} --> ${_srtTime(cue.end)}');
         out.writeln(cue.text);
         out.writeln();
       }
       await file.writeAsString(out.toString(), flush: true);
-      await Share.shareXFiles([XFile(file.path, mimeType: 'application/x-subrip')], text: 'Legendas de \${widget.project.title}');
+      await Share.shareXFiles([XFile(file.path, mimeType: 'application/x-subrip')], text: 'Legendas de ${widget.project.title}');
     } on Object catch (error) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Falha ao exportar SRT: $error')));
     }
@@ -424,9 +424,9 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
             final index = entry.key;
             final cue = entry.value;
             return Card(child: ListTile(
-              leading: Text('\${index + 1}'),
+              leading: Text('${index + 1}'),
               title: Text(cue.text),
-              subtitle: Text('\${_clock(cue.start)} – \${_clock(cue.end)}'),
+              subtitle: Text('${_clock(cue.start)} – ${_clock(cue.end)}'),
               onTap: () => controller?.seekTo(cue.start),
               trailing: IconButton(tooltip: 'Excluir legenda', onPressed: () => setState(() => _cues.removeAt(index)), icon: const Icon(Icons.delete_outline)),
             ));
