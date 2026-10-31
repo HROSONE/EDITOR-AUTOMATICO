@@ -17,8 +17,8 @@ void main() {
       expect(timeline.keepRanges.first.start, const Duration(milliseconds: 680));
       expect(timeline.keepRanges.first.end, const Duration(milliseconds: 2420));
       expect(timeline.removedRanges, hasLength(4));
-      expect(timeline.outputDuration, lessThan(const Duration(seconds: 10)));
-      expect(timeline.removedDuration, greaterThan(const Duration(seconds: 4)));
+      expect(timeline.outputDuration.inMilliseconds, lessThan(10000));
+      expect(timeline.removedDuration.inMilliseconds, greaterThan(4000));
     });
 
     test('does not cut a video when VAD finds no speech', () {
