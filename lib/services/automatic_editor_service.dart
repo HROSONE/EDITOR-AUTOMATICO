@@ -200,12 +200,19 @@ class AutomaticEditorService {
     }
 
     final graph = StringBuffer();
-    for (var i = 0; i < timeline.keepRanges.length; i++) {
+    final segmentCount = timeline.keepRanges.length;
+    final videoSplitLabels = List.generate(segmentCount, (i) => '[vsrc$i]').join();
+    graph.write('[0:v:0]split=$segmentCount$videoSplitLabels;');
+    if (hasAudio) {
+      final audioSplitLabels = List.generate(segmentCount, (i) => '[asrc$i]').join();
+      graph.write('[0:a:0]asplit=$segmentCount$audioSplitLabels;');
+    }
+    for (var i = 0; i < segmentCount; i++) {
       final range = timeline.keepRanges[i];
       final start = _seconds(range.start);
       final end = _seconds(range.end);
-      graph.write('[0:v:0]trim=start=$start:end=$end,setpts=PTS-STARTPTS[v$i];');
-      if (hasAudio) graph.write('[0:a:0]atrim=start=$start:end=$end,asetpts=PTS-STARTPTS[a$i];');
+      graph.write('[vsrc$i]trim=start=$start:end=$end,setpts=PTS-STARTPTS[v$i];');
+      if (hasAudio) graph.write('[asrc$i]atrim=start=$start:end=$end,asetpts=PTS-STARTPTS[a$i];');
     }
     if (hasAudio) {
       final inputs = List.generate(timeline.keepRanges.length, (i) => '[v$i][a$i]').join();
