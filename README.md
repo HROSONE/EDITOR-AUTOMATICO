@@ -22,20 +22,21 @@ Os vídeos não são enviados para servidores pelo aplicativo.
 - Remoção automática de pausas.
 - Renderização/exportação MP4 com cortes e legendas queimadas.
 
-Esses recursos exigem integração e validação de motores nativos. A integração deve usar processamento por blocos e limites de memória para dispositivos móveis.
+Esses recursos exigem integração e validação de motores nativos. A integração deve usar processamento por blocos e limites de memória para dispositivos móveis. O modelo Whisper não está incluído no repositório.
 
 ## Desenvolvimento
 
-Requer Flutter stable e Android SDK.
+Requer Flutter stable e Android SDK. Como o host Android é gerado no workflow, crie-o uma vez antes de compilar localmente:
 
 ```bash
+flutter create . --platforms=android --project-name editor_automatico
 flutter pub get
 flutter analyze
 flutter test
 flutter build apk --debug
 ```
 
-O GitHub Actions executa análise, testes e build de APK debug em cada push para `main`. O APK fica disponível como artefato quando a execução termina com sucesso.
+O GitHub Actions executa análise, testes e build de APK debug em cada push para `main`. O APK fica disponível como artefato quando a execução termina com sucesso. A compilação ainda precisa ser confirmada por uma execução verde do workflow.
 
 ## Armazenamento
 
