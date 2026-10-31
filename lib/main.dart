@@ -315,7 +315,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
     if (controller == null || !controller.value.isInitialized) return;
     final textController = TextEditingController();
     final start = controller.value.position;
-    final end = Duration(milliseconds: (start.inMilliseconds + 2500).clamp(0, controller.value.duration.inMilliseconds));
+    final end = Duration(milliseconds: (start.inMilliseconds + 2500).clamp(0, controller.value.duration.inMilliseconds).toInt());
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -392,7 +392,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
           ValueListenableBuilder<VideoPlayerValue>(valueListenable: controller, builder: (context, value, _) {
             final max = value.duration.inMilliseconds.toDouble().clamp(1, double.infinity);
             return Column(children: [
-              Slider(value: value.position.inMilliseconds.toDouble().clamp(0, max), max: max,
+              Slider(value: value.position.inMilliseconds.toDouble().clamp(0, max).toDouble(), max: max,
                 onChanged: (v) => controller.seekTo(Duration(milliseconds: v.round()))),
               Row(children: [
                 Text(_clock(value.position)), const Spacer(),
