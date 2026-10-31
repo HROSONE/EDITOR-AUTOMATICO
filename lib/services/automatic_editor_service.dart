@@ -262,7 +262,7 @@ class AutomaticEditorService {
     final validation = await FFprobeKit.getMediaInformation(output.path);
     final validatedMedia = validation.getMediaInformation();
     final outputStreams = validatedMedia.getStreams() ?? [];
-    final outputDurationSeconds = double.tryParse(validatedMedia?.getDuration() ?? '');
+    final outputDurationSeconds = double.tryParse(validatedMedia.getDuration() ?? '');
     final expectedDurationSeconds = timeline.outputDuration.inMilliseconds / 1000;
     final toleranceSeconds = expectedDurationSeconds < 10 ? 2.0 : expectedDurationSeconds * 0.05;
     final hasVideoOutput = outputStreams.any((stream) => stream.getType() == 'video');
