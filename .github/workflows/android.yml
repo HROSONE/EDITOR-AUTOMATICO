@@ -37,6 +37,17 @@ jobs:
           elif [ -f android/app/build.gradle ]; then
             sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 24/' android/app/build.gradle
           fi
+      - name: Configure network permission for first model download
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('android/app/src/main/AndroidManifest.xml')
+          content = path.read_text()
+          permission = '    <uses-permission android:name="android.permission.INTERNET" />\n'
+          if 'android.permission.INTERNET' not in content:
+              content = content.replace('<application', permission + '    <application', 1)
+              path.write_text(content)
+          PY
       - name: Install dependencies
         run: flutter pub get
       - name: Analyze
