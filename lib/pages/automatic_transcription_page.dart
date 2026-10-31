@@ -99,6 +99,8 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
 
   Future<void> _run() async {
     if (_busy || _rendering) return;
+    await _previewController?.dispose();
+    _previewController = null;
     setState(() {
       _busy = true;
       _error = null;
@@ -201,6 +203,8 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
     final srt = _srt;
     final timeline = _timeline;
     if (srt == null || timeline == null || _rendering || _busy) return;
+    await _previewController?.dispose();
+    _previewController = null;
     setState(() {
       _rendering = true;
       _error = null;
