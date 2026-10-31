@@ -18,6 +18,7 @@ class AutomaticTranscription {
     required this.audioPath,
     required this.modelPath,
     required this.longPauses,
+    required this.srtPath,
   });
 
   final String srt;
@@ -25,6 +26,7 @@ class AutomaticTranscription {
   final String audioPath;
   final String modelPath;
   final List<DetectedPause> longPauses;
+  final String srtPath;
 }
 
 /// Local-only audio preparation and Portuguese transcription.
@@ -151,12 +153,51 @@ class AutomaticEditorService {
         audioPath: wav.path,
         modelPath: model.path,
         longPauses: longPauses,
+        srtPath: srtFile.path,
       );
     } finally {
       vad?.dispose();
       await engine?.dispose();
       await manager.close();
     }
+  }
+
+
+  Future<File> renderSubtitledMp4({
+    required String videoPath,
+    required String srtPath,
+    required String projectId,
+    required void Function(String stage) onStage,
+  }) async {
+    final support = await getApplicationSupportDirectory();
+    final outputDir = Directory('${support.path}/automatic_editor/$projectId');
+    await outputDir.create(recursive: true);
+    final output = File('${outputDir.path}/video_com_legendas.mp4');
+    if (await output.exists()) await output.delete();
+
+    onStage('Renderizando MP4 com legendas…');
+    // App-managed paths are generated under the private app directory and contain no filter delimiters.
+    final command = [
+      '-y',
+      '-i', _quote(videoPath),
+      '-vf', 'subtitles=$srtPath',
+      '-map', '0:v:0',
+      '-map', '0:a?',
+      '-c:v', 'mpeg4',
+      '-q:v', '4',
+      '-c:a', 'aac',
+      '-b:a', '128k',
+      '-movflags', '+faststart',
+      _quote(output.path),
+    ].join(' ');
+    final session = await FFmpegKit.execute(command);
+    final code = await session.getReturnCode();
+    if (!ReturnCode.isSuccess(code) || !await output.exists() || await output.length() == 0) {
+      final logs = await session.getOutput();
+      throw StateError('Falha ao renderizar o MP4. ${logs ?? 'FFmpeg falhou.'}');
+    }
+    onStage('MP4 renderizado com sucesso.');
+    return output;
   }
 
   String _quote(String value) => "'${value.replaceAll("'", "'\\''")}'";
