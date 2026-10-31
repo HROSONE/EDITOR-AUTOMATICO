@@ -163,7 +163,9 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
     final modelPath = _modelPath;
     final timeline = _timeline;
     if (srt == null || transcript == null || srtPath == null ||
-        audioPath == null || modelPath == null || timeline == null) return null;
+        audioPath == null || modelPath == null || timeline == null) {
+      return null;
+    }
     return AutomaticTranscription(
       srt: srt, text: transcript, srtPath: srtPath, audioPath: audioPath,
       modelPath: modelPath, timeline: timeline,
