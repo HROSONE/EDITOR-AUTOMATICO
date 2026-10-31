@@ -31,8 +31,8 @@ void main() {
     });
 
     test('maps timestamps across removed sections', () {
-      final timeline = EditTimeline(
-        sourceDuration: const Duration(seconds: 10),
+      final timeline = const EditTimeline(
+        sourceDuration: Duration(seconds: 10),
         keepRanges: const [
           TimeRange(Duration(seconds: 1), Duration(seconds: 3)),
           TimeRange(Duration(seconds: 6), Duration(seconds: 9)),
@@ -68,14 +68,14 @@ void main() {
     test('retimes subtitles after removed pauses', () {
       final timeline = EditTimeline(
         sourceDuration: const Duration(seconds: 10),
-        keepRanges: const [
+        keepRanges: [
           TimeRange(Duration(seconds: 1), Duration(seconds: 3)),
           TimeRange(Duration(seconds: 6), Duration(seconds: 9)),
         ],
       );
       final cues = timeline.retimeCues([
-        SubtitleCueData(
-          start: const Duration(seconds: 6, milliseconds: 500),
+        const SubtitleCueData(
+          start: Duration(seconds: 6, milliseconds: 500),
           end: const Duration(seconds: 7),
           text: 'Depois do corte',
         ),
