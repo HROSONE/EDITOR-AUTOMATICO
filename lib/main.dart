@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
+import 'pages/automatic_transcription_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -410,6 +411,23 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
             ]);
           }),
         ],
+        const SizedBox(height: 18),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: _loading || _error != null
+                ? null
+                : () => Navigator.of(context).push(MaterialPageRoute<void>(
+                    builder: (_) => AutomaticTranscriptionPage(
+                      videoPath: widget.project.path,
+                      projectId: widget.project.id,
+                      title: widget.project.title,
+                    ),
+                  )),
+            icon: const Icon(Icons.auto_awesome),
+            label: const Text('Gerar legendas automaticamente'),
+          ),
+        ),
         const SizedBox(height: 18),
         Row(children: [
           Expanded(child: Text('Legendas', style: Theme.of(context).textTheme.titleLarge)),
