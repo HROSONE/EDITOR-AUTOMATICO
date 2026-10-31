@@ -2,31 +2,34 @@
 
 Aplicativo Flutter Android-first para editar vídeos com processamento local.
 
-## Estado atual — versão 0.3.0
+## Estado atual — versão 0.4.0
 
 - Importação de vídeo e cópia para armazenamento privado.
 - Lista de projetos persistida localmente.
 - Reprodução, pausa e navegação pela duração do vídeo.
 - Extração de áudio para WAV mono 16 kHz usando FFmpeg.
 - Transcrição automática em português com Whisper.cpp no próprio aparelho.
-- Detecção Silero VAD de regiões de fala e listagem de pausas longas candidatas (acima de 1,2 s).
+- Detecção Silero VAD de regiões de fala e geração de um plano de cortes não destrutivo com margens de segurança.
+- Revisão do plano de cortes: pausas detectadas podem ser restauradas antes da renderização.
 - Geração de legendas SRT sincronizadas pelos timestamps do Whisper.
 - Download sob demanda do modelo multilíngue Whisper Tiny (aproximadamente 75 MB); depois do download, a inferência funciona offline.
 - Exportação e compartilhamento do SRT.
-- Renderização de um MP4 com legendas queimadas (sem cortes automáticos ainda).
+- Aplicação dos cortes planejados, concatenação de vídeo/áudio e queima das legendas no MP4.
+- Recalculo dos timestamps SRT para a timeline resultante.
+- Salvamento local do estado da edição e recuperação do último resultado concluído.
+- Cancelamento de inferência Whisper e de operações FFmpeg.
 - Revisão/adição manual de legendas como recurso opcional.
 
 Os arquivos de vídeo e áudio são processados localmente. O aplicativo não envia mídia para servidores. A primeira execução da transcrição precisa de internet apenas para baixar o modelo.
 
-## Ainda não implementado
+## Ainda precisa ser validado / evoluído
 
-- Refinamento do VAD e configuração de sensibilidade/margens por projeto.
-- Timeline não destrutiva e plano de cortes seguros.
-- Remoção automática das pausas candidatas, com margens de segurança para não cortar sílabas ou palavras.
-- Aplicação dos cortes ao MP4 e ajuste dos timestamps das legendas após os cortes.
-- Retomada de tarefas interrompidas e cancelamento completo do processamento.
+- Compilação Android e execução em aparelho físico; o CI deve validar dependências, análise estática, testes e APK.
+- Pré-visualização dentro do app do MP4 já renderizado.
+- Retomada de uma inferência interrompida no meio; o app recupera o último estado completo salvo, não o estado interno de uma inferência nativa interrompida.
+- Ajustes finos de VAD e margens com base em vídeos reais em português.
 
-**Importante:** a integração do Whisper e do FFmpeg foi adicionada ao código, mas ainda precisa passar pelo build Android e por testes em aparelho físico. Não considere a versão pronta até o GitHub Actions concluir análise, testes e APK com sucesso.
+**Importante:** o pipeline de cortes, sincronização e renderização foi adicionado ao código. Ainda precisa passar pelo build Android e por testes em aparelho físico; não considere o APK pronto antes dessas verificações. Não considere a versão pronta até o GitHub Actions concluir análise, testes e APK com sucesso.
 
 ## Motores
 
@@ -48,7 +51,7 @@ flutter test
 flutter build apk --debug
 ```
 
-O GitHub Actions executa análise, testes e build de APK debug em cada push para `main`. O APK fica disponível como artefato quando a execução termina com sucesso.
+O GitHub Actions executa análise, testes e build de APK debug em cada push para `main` e em pull requests. O APK fica disponível como artefato quando a execução termina com sucesso.
 
 ## Armazenamento
 
