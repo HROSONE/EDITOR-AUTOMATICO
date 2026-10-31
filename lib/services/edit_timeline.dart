@@ -1,7 +1,5 @@
 class TimeRange {
-  const TimeRange(this.start, this.end)
-      : assert(start >= Duration.zero),
-        assert(end > start);
+  const TimeRange(this.start, this.end);
   final Duration start;
   final Duration end;
   Duration get duration => end - start;
