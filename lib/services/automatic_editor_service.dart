@@ -5,18 +5,27 @@ import 'package:ffmpeg_kit_flutter_new_video/return_code.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:whisper_cpp_flutter_plus/whisper_cpp_flutter_plus.dart';
 
+class DetectedPause {
+  const DetectedPause({required this.start, required this.end});
+  final Duration start;
+  final Duration end;
+  Duration get duration => end - start;
+}
+
 class AutomaticTranscription {
   const AutomaticTranscription({
     required this.srt,
     required this.text,
     required this.audioPath,
     required this.modelPath,
+    required this.longPauses,
   });
 
   final String srt;
   final String text;
   final String audioPath;
   final String modelPath;
+  final List<DetectedPause> longPauses;
 }
 
 /// Local-only audio preparation and Portuguese transcription.
@@ -64,6 +73,7 @@ class AutomaticEditorService {
     onStage('Verificando o modelo de português…');
     final manager = WhisperModelManager();
     WhisperEngine? engine;
+    WhisperVad? vad;
     try {
       var model = await manager.find(modelFileName);
       if (model == null) {
@@ -84,6 +94,37 @@ class AutomaticEditorService {
       engine = await WhisperEngine.load(model.path);
       onStage('Transcrevendo em português…');
       final samples = await WhisperAudio.readWav(wav);
+
+      onStage('Baixando/verificando o detector Silero VAD…');
+      var vadModel = await manager.findCatalogModel(WhisperModelCatalog.sileroVad);
+      if (vadModel == null) {
+        await for (final item in manager.downloadCatalogModel(WhisperModelCatalog.sileroVad)) {
+          onProgress(item.fraction.clamp(0.0, 1.0));
+        }
+        vadModel = await manager.findCatalogModel(WhisperModelCatalog.sileroVad);
+      }
+      if (vadModel == null) {
+        throw StateError('Não foi possível instalar o modelo Silero VAD.');
+      }
+      onStage('Detectando fala e pausas…');
+      vad = WhisperVad.load(vadModel.path, useGpu: false, threads: 2);
+      final speechRanges = vad.segments(
+        samples,
+        threshold: 0.5,
+        minSpeechMs: 250,
+        minSilenceMs: 500,
+        speechPadMs: 140,
+      );
+      final longPauses = <DetectedPause>[];
+      for (var i = 1; i < speechRanges.length; i++) {
+        final gapStart = speechRanges[i - 1].end;
+        final gapEnd = speechRanges[i].start;
+        if (gapEnd - gapStart >= const Duration(milliseconds: 1200)) {
+          longPauses.add(DetectedPause(start: gapStart, end: gapEnd));
+        }
+      }
+
+      onStage('Transcrevendo em português…');
       final task = engine.transcribe(
         samples,
         options: const TranscribeOptions(
@@ -110,8 +151,10 @@ class AutomaticEditorService {
         text: result.text,
         audioPath: wav.path,
         modelPath: model.path,
+        longPauses: longPauses,
       );
     } finally {
+      vad?.dispose();
       await engine?.dispose();
       await manager.close();
     }
