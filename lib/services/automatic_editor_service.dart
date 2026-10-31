@@ -198,7 +198,10 @@ class AutomaticEditorService {
     onStage('Verificando faixas de áudio e vídeo…');
     final probe = await FFprobeKit.getMediaInformation(videoPath);
     final media = probe.getMediaInformation();
-    final streams = media.getStreams() ?? [];
+    if (media == null) {
+      throw StateError('Não foi possível ler as faixas do vídeo original.');
+    }
+    final streams = media.getStreams();
     final hasAudio = streams.any((stream) => stream.getType() == 'audio');
     if (!streams.any((stream) => stream.getType() == 'video')) {
       throw StateError('O arquivo não contém uma faixa de vídeo reconhecida.');
@@ -261,7 +264,11 @@ class AutomaticEditorService {
     onStage('Validando arquivo MP4 final…');
     final validation = await FFprobeKit.getMediaInformation(output.path);
     final validatedMedia = validation.getMediaInformation();
-    final outputStreams = validatedMedia.getStreams() ?? [];
+    if (validatedMedia == null) {
+      await output.delete();
+      throw StateError('O FFprobe não conseguiu ler o MP4 renderizado.');
+    }
+    final outputStreams = validatedMedia.getStreams();
     final outputDurationSeconds = double.tryParse(validatedMedia.getDuration() ?? '');
     final expectedDurationSeconds = timeline.outputDuration.inMilliseconds / 1000;
     final toleranceSeconds = expectedDurationSeconds < 10 ? 2.0 : expectedDurationSeconds * 0.05;
