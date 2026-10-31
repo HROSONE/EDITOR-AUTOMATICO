@@ -93,7 +93,7 @@ class AutomaticEditorService {
         onStage('Baixando detector Silero VAD verificado…');
         await for (final item in manager.downloadCatalogModel(WhisperModelCatalog.sileroVad)) {
           if (_cancelRequested) throw StateError('Download cancelado.');
-          onProgress(item.fraction.clamp(0.0, 1.0).toDouble());
+          onProgress((item.fraction ?? 0.0).clamp(0.0, 1.0).toDouble());
         }
         vadModel = await manager.findCatalogModel(WhisperModelCatalog.sileroVad);
       }
