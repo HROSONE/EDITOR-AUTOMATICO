@@ -144,7 +144,9 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
         });
       }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
