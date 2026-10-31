@@ -38,6 +38,10 @@ Os arquivos de vídeo e áudio são processados localmente. O aplicativo não en
 
 O plugin Whisper exige Android API 24 ou superior. O workflow configura esse mínimo após gerar o projeto Android.
 
+## Testes automatizados
+
+A suíte `test/edit_timeline_test.dart` cobre a preservação das margens de fala, o comportamento sem fala detectada, o mapeamento de tempos após cortes, a serialização do plano de edição e a leitura/escrita/retimização de SRT.
+
 ## Desenvolvimento
 
 Requer Flutter stable e Android SDK:
