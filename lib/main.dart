@@ -170,7 +170,7 @@ class _EditorHomePageState extends State<EditorHomePage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Editor Automático'), actions: [
       IconButton(tooltip: 'Sobre', onPressed: () => showAboutDialog(
-        context: context, applicationName: 'Editor Automático', applicationVersion: '0.3.0',
+        context: context, applicationName: 'Editor Automático', applicationVersion: '0.4.0',
         applicationLegalese: 'Processamento local. Seus vídeos não são enviados automaticamente.',
       ), icon: const Icon(Icons.info_outline)),
     ]),
@@ -246,7 +246,7 @@ class _EditorHomePageState extends State<EditorHomePage> {
               const _Stage(title: 'Detecção de fala e pausas (Silero VAD)', status: 'Integração adicionada', icon: Icons.graphic_eq),
               const _Stage(title: 'Transcrição automática (Whisper)', status: 'Integração adicionada', icon: Icons.record_voice_over),
               const _Stage(title: 'MP4 com legendas queimadas', status: 'Integração adicionada', icon: Icons.movie_creation_outlined),
-              const _Stage(title: 'Corte automático de pausas', status: 'Pendente', icon: Icons.content_cut),
+              const _Stage(title: 'Cortes automáticos + legendas sincronizadas', status: 'Implementação adicionada', icon: Icons.content_cut),
             ]),
           )),
         ],
@@ -423,6 +423,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                       videoPath: widget.project.path,
                       projectId: widget.project.id,
                       title: widget.project.title,
+                      sourceDuration: controller!.value.duration,
                     ),
                   )),
             icon: const Icon(Icons.auto_awesome),
