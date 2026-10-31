@@ -9,6 +9,7 @@ Aplicativo Flutter Android-first para editar vídeos com processamento local.
 - Reprodução, pausa e navegação pela duração do vídeo.
 - Extração de áudio para WAV mono 16 kHz usando FFmpeg.
 - Transcrição automática em português com Whisper.cpp no próprio aparelho.
+- Detecção Silero VAD de regiões de fala e listagem de pausas longas candidatas (acima de 1,2 s).
 - Geração de legendas SRT sincronizadas pelos timestamps do Whisper.
 - Download sob demanda do modelo multilíngue Whisper Tiny (aproximadamente 75 MB); depois do download, a inferência funciona offline.
 - Exportação e compartilhamento do SRT.
@@ -18,9 +19,9 @@ Os arquivos de vídeo e áudio são processados localmente. O aplicativo não en
 
 ## Ainda não implementado
 
-- VAD Silero independente para mapear fala e silêncio com maior precisão.
+- Refinamento do VAD e configuração de sensibilidade/margens por projeto.
 - Timeline não destrutiva e plano de cortes seguros.
-- Remoção automática de pausas sem cortar palavras.
+- Remoção automática das pausas candidatas, com margens de segurança para não cortar sílabas ou palavras.
 - Renderização/exportação MP4 com cortes e legendas queimadas.
 - Retomada de tarefas interrompidas e cancelamento completo do processamento.
 
