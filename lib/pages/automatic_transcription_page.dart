@@ -88,6 +88,7 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
           if (path != null && File(path).existsSync()) _renderedMp4 = File(path);
           _stage = 'Projeto recuperado do armazenamento local.';
         });
+        if (_renderedMp4 != null) await _loadPreview(_renderedMp4!);
       }
     } on Object catch (error) {
       if (mounted) setState(() => _error = 'Não foi possível recuperar a edição: $error');
@@ -376,8 +377,9 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
                               Expanded(
                                 child: Slider(
                                   value: value.position.inMilliseconds.toDouble()
-                                      .clamp(0, value.duration.inMilliseconds.toDouble().clamp(1, double.infinity)),
-                                  max: value.duration.inMilliseconds.toDouble().clamp(1, double.infinity),
+                                      .clamp(0, value.duration.inMilliseconds.toDouble().clamp(1, double.infinity))
+                                      .toDouble(),
+                                  max: value.duration.inMilliseconds.toDouble().clamp(1, double.infinity).toDouble(),
                                   onChanged: (position) => _previewController!.seekTo(
                                     Duration(milliseconds: position.round()),
                                   ),
