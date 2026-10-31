@@ -29,6 +29,9 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
   String? _error;
   String? _srt;
   String? _transcript;
+  String? _srtPath;
+  File? _renderedMp4;
+  bool _rendering = false;
   List<DetectedPause> _pauses = [];
   double _progress = 0;
 
@@ -39,6 +42,8 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
       _error = null;
       _srt = null;
       _transcript = null;
+      _srtPath = null;
+      _renderedMp4 = null;
       _pauses = [];
       _progress = 0;
       _stage = 'Iniciando…';
@@ -58,6 +63,7 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
       setState(() {
         _srt = result.srt;
         _transcript = result.text;
+        _srtPath = result.srtPath;
         _pauses = result.longPauses;
         _stage = 'Transcrição e análise de pausas concluídas.';
       });
@@ -69,6 +75,37 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+
+  Future<void> _renderMp4() async {
+    final srtPath = _srtPath;
+    if (srtPath == null || _rendering) return;
+    setState(() => _rendering = true);
+    try {
+      final file = await _service.renderSubtitledMp4(
+        videoPath: widget.videoPath,
+        srtPath: srtPath,
+        projectId: widget.projectId,
+        onStage: (value) {
+          if (mounted) setState(() => _stage = value);
+        },
+      );
+      if (mounted) setState(() => _renderedMp4 = file);
+    } on Object catch (error) {
+      if (mounted) setState(() => _error = error.toString());
+    } finally {
+      if (mounted) setState(() => _rendering = false);
+    }
+  }
+
+  Future<void> _shareMp4() async {
+    final file = _renderedMp4;
+    if (file == null || !await file.exists()) return;
+    await Share.shareXFiles(
+      [XFile(file.path, mimeType: 'video/mp4')],
+      text: 'Vídeo com legendas: ${widget.title}',
+    );
   }
 
   String _formatTime(Duration value) {
@@ -153,6 +190,22 @@ class _AutomaticTranscriptionPageState extends State<AutomaticTranscriptionPage>
               icon: const Icon(Icons.file_download_outlined),
               label: const Text('Exportar legendas SRT'),
             ),
+            const SizedBox(height: 10),
+            FilledButton.icon(
+              onPressed: _rendering ? null : _renderMp4,
+              icon: _rendering
+                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.movie_creation_outlined),
+              label: Text(_rendering ? 'Renderizando MP4…' : 'Gerar MP4 com legendas'),
+            ),
+            if (_renderedMp4 != null) ...[
+              const SizedBox(height: 8),
+              FilledButton.tonalIcon(
+                onPressed: _shareMp4,
+                icon: const Icon(Icons.share_outlined),
+                label: const Text('Compartilhar vídeo final'),
+              ),
+            ],
           ],
         ],
       ),
